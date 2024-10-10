@@ -1,0 +1,89 @@
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  outline: 0;
+}
+
+.EditorContainer {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.Editor {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 10px;
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
+}
+
+#output {
+  height: 70vh;
+  width: 100%;
+  max-height: 70vh;
+  max-width: 100%;
+  resize: both;
+  overflow: auto;
+  background-color: white;
+  box-shadow: inset 0 0 0.5px 1px hsla(0, 0%, 100%, 0.075), 0 0 0 1px hsla(0, 0%, 0%, 0.05), 0 0.3px 0.4px hsla(0, 0%, 0%, 0.02),
+    0 0.9px 1.5px hsla(0, 0%, 0%, 0.045), 0 3.5px 6px hsla(0, 0%, 0%, 0.09);
+  border-radius: 10px;
+}
+
+.container {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-grow: 1;
+}
+
+.input-group {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  margin: 0.5rem;
+}
+
+label {
+  margin: 0 0 5px 10px;
+}
+
+#HTML,
+#CSS,
+#JS {
+  overflow: scroll;
+  flex-grow: 1;
+  width: 100%;
+  height: auto;
+  resize: none;
+  color: white;
+  background-color: #22232b;
+  border: 0;
+  outline: 0;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: inset 0 0 0.5px 1px hsla(0, 0%, 100%, 0.075), 0 0 0 1px hsla(0, 0%, 0%, 0.05), 0 0.3px 0.4px hsla(0, 0%, 0%, 0.02),
+    0 0.9px 1.5px hsla(0, 0%, 0%, 0.045), 0 3.5px 6px hsla(0, 0%, 0%, 0.09);
+}
+
+/* HTML Handling */
+
+.editor {
+  white-space: pre-wrap;
+  font-family: monospace;
+  font-size: 16px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  min-height: 200px;
+}
+
+.html-tag {
+  color: red;
+}

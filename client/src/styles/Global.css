@@ -1,0 +1,26 @@
+:root {
+  --TextColor: #dfdfd6;
+  --LowTextColor: #98989f;
+  --PageBgColor: #1b1b1f;
+  --ElementBgColor: #161618;
+  --SecondaryElementBgColor: #202126;
+  --AccentColor: #a8b1ff;
+}
+@font-face {
+  font-family: "MontrealBold";
+  src: url("assets/fonts/PPNeueMontreal-Bold.otf") format("otf");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "MontrealRegular";
+  src: url("assets/fonts/PPNeueMontreal-Regular.otf") format("otf");
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  font-family: "MontrealRegular", sans-serif;
+  background-color: var(--PageBgColor);
+  color: var(--TextColor);
+}

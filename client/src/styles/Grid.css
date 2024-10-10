@@ -1,0 +1,50 @@
+.grid-container {
+  margin: 0 auto;
+  width: 90vw;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Crée 3 colonnes égales */
+  gap: 3vw; /* Espacement entre les éléments de la grille */
+}
+
+.grid-item {
+  background-color: var(--ElementBgColor);
+  padding: 1vw;
+  border-radius: 1rem;
+}
+
+.postImage {
+  width: 100%;
+  border-radius: 1rem;
+}
+
+.grid-item h3 {
+  margin: 1vw 0;
+}
+
+.postUser {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.userInfo {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  color: var(--LowTextColor);
+}
+
+.userInfo img {
+  width: 3vw;
+  border-radius: 100%;
+  margin-right: 0.5vw;
+}
+
+.postUser button {
+  color: var(--TextColor);
+  background-color: var(--SecondaryElementBgColor);
+  padding: 0.5vw 1vw;
+  border-radius: 3px;
+}
