@@ -3,7 +3,7 @@ const Grid = ({ posts }) => {
     <section className="grid-container">
       {posts.length > 0 ? (
         posts.map((post) => (
-          <div key={post._id} className="grid-item">
+          <div key={post._id} className="grid-item box">
             <img className="postImage" src={post.image || "/img/placeholder.png"} alt={post.name} />
             <h3>{post.name}</h3>
             <div className="postUser">

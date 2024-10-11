@@ -1,0 +1,62 @@
+.ConnexionContainer {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.Connexion {
+  display: flex;
+  flex-direction: column;
+  padding: 2vw;
+  width: 40vw;
+  background-color: var(--ElementBgColor);
+  border-radius: 1vw;
+}
+
+.divConnexion {
+  text-align: start;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 1.5vw;
+}
+
+.divConnexion label {
+  margin: 0 0 1vw 0; /* espacement sous les labels */
+  font-weight: bold; /* mettre les labels en gras */
+}
+
+input[type="email"],
+input[type="password"] {
+  width: 100%; /* remplir la largeur du conteneur */
+  padding: 0.75rem; /* espacement intérieur */
+  border: 1px solid #ccc; /* bordure grise */
+  border-radius: 0.5rem; /* coins arrondis */
+  transition: border-color 0.3s; /* transition douce pour la bordure */
+}
+
+input[type="email"]:focus,
+input[type="password"]:focus {
+  border-color: var(--AccentColor); /* couleur de bordure lors du focus */
+  outline: none; /* enlever le contour par défaut */
+}
+
+button {
+  padding: 0.75rem 1.5rem; /* espacement intérieur */
+  background-color: var(--AccentColor); /* couleur de fond du bouton */
+  color: white; /* couleur du texte */
+  border: none; /* pas de bordure */
+  border-radius: 0.5rem; /* coins arrondis */
+  cursor: pointer; /* changement de curseur au survol */
+  transition: background-color 0.3s; /* transition douce pour la couleur de fond */
+}
+
+button:hover {
+  background-color: darken(var(--AccentColor), 10%); /* couleur plus foncée au survol */
+}
+
+button:active {
+  transform: scale(0.98); /* effet de pression sur le bouton */
+}

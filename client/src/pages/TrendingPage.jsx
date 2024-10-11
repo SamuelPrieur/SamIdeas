@@ -1,3 +1,5 @@
+// Dans TrendingPage.jsx
+
 import { useState, useEffect } from "react";
 import Navbar from "@components/Navbar";
 import Grid from "@components/Grid";
@@ -10,12 +12,12 @@ const TrendingPage = () => {
 
   const fetchAPI = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/api/posts"); // Mettez à jour l'URL
-      const data = response.data; // Les données sont directement sous la réponse
-      setPosts(data); // Store the fetched posts in state
-      setFilteredPosts(data); // Initially display all posts
+      const response = await axios.get("http://localhost:8080/api/posts"); // Route modifiée
+      const data = response.data; // Pas besoin de "fruit" ici, on utilise directement les données de posts
+      setPosts(data); // Stocke les posts dans l'état
+      setFilteredPosts(data); // Affiche initialement tous les posts
     } catch (error) {
-      console.error("Error fetching the API", error);
+      console.error("Erreur lors de la récupération des posts :", error);
     }
   };
 
@@ -23,7 +25,6 @@ const TrendingPage = () => {
     fetchAPI();
   }, []);
 
-  // Fonction de recherche
   const handleSearchFunction = (query) => {
     const results = posts.filter((post) => post.name.toLowerCase().includes(query.toLowerCase()));
     setFilteredPosts(results);
@@ -33,7 +34,7 @@ const TrendingPage = () => {
     <div>
       <Navbar />
       <SearchBar onSearch={handleSearchFunction} />
-      <Grid posts={filteredPosts} /> {/* Passes les posts filtrés à Grid */}
+      <Grid posts={filteredPosts} /> {/* Passe les posts filtrés à Grid */}
     </div>
   );
 };

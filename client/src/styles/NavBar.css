@@ -12,6 +12,61 @@
   border-radius: 100%;
 }
 
+.UserPP.inactive {
+  border: 2px solid var(--PageBgColor);
+  transition-duration: 0.3s;
+}
+.UserPP.active {
+  border: 2px solid var(--AccentColor);
+  transition-duration: 0.3s;
+}
+
+.ProfileContainer {
+  position: relative;
+}
+
+.DropdownMenu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: var(--PageBgColor);
+  border-radius: 0.5vw;
+  padding: 0.5vw;
+  display: flex;
+  flex-direction: column;
+  width: 12vw;
+  z-index: 10;
+}
+
+.dropdown-link {
+  text-decoration: none;
+  color: var(--TextColor);
+  border-radius: 0.5vw;
+  padding: 0.5vw;
+  margin-bottom: 0.5vw;
+  text-align: center;
+  font-size: 1.2vw;
+}
+
+.dropdown-link:hover {
+  background-color: var(--ElementBgColor);
+}
+
+.logout-btn {
+  font-size: 1.2vw;
+  border-radius: 0.5vw;
+  background: none;
+  border: none;
+  padding: 0.5vw;
+  text-align: center;
+  background-color: #da3131;
+  cursor: pointer;
+}
+
+.logout-btn:hover {
+  background-color: #ce2f2f;
+}
+
 .LinkContainer {
   overflow: hidden;
   display: flex;
@@ -24,7 +79,7 @@
   color: var(--TextColor);
   text-decoration: none;
   padding: 1.25rem 7rem;
-  font-size: 1.2rem;
+  font-size: 1.5vw;
   position: relative;
   transition: color 0.3s;
 }

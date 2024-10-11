@@ -50,7 +50,7 @@ const EditorPage = () => {
   return (
     <div className="EditorContainer">
       <div className="Editor">
-        <iframe id="output"></iframe>
+        <iframe className="box" id="output"></iframe>
         <section className="container">
           <div
             className="input-group"
@@ -61,7 +61,7 @@ const EditorPage = () => {
             <label htmlFor="HTML" onClick={() => handleLabelClick("HTML")}>
               <i className="fa-brands fa-html5"></i> HTML
             </label>
-            <textarea name="HTML" id="HTML" onInput={(e) => setHtmlCode(e.target.innerText)} onKeyUp={handleHtmlBalise}></textarea>
+            <textarea className="box" name="HTML" id="HTML" onInput={(e) => setHtmlCode(e.target.innerText)} onKeyUp={handleHtmlBalise}></textarea>
           </div>
 
           <div
@@ -73,7 +73,7 @@ const EditorPage = () => {
             <label htmlFor="CSS" onClick={() => handleLabelClick("CSS")}>
               <i className="fa-brands fa-css3-alt"></i> CSS
             </label>
-            <textarea name="CSS" id="CSS" onInput={(e) => setCssCode(e.target.innerText)} onKeyUp={run}></textarea>
+            <textarea className="box" name="CSS" id="CSS" onInput={(e) => setCssCode(e.target.innerText)} onKeyUp={run}></textarea>
           </div>
 
           <div
@@ -85,7 +85,7 @@ const EditorPage = () => {
             <label htmlFor="JS" onClick={() => handleLabelClick("JS")}>
               <i className="fa-brands fa-js"></i> JS
             </label>
-            <textarea name="JS" id="JS" onInput={(e) => setJsCode(e.target.innerText)} onKeyUp={run}></textarea>
+            <textarea className="box" name="JS" id="JS" onInput={(e) => setJsCode(e.target.innerText)} onKeyUp={run}></textarea>
           </div>
         </section>
       </div>
