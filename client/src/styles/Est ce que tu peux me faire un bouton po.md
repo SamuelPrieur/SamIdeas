@@ -1,23 +1,29 @@
-import { useState } from "react";
-import axios from "axios";
+Est ce que tu peux me faire un bouton pour créer un post ou l'update si il existe déjà?
+Voici quelque fichier pour t'aider : 
+    - Post.js : est la structure de ma table posts
+    - posts.js : est l'ensemble des requettes en rapport avec les posts
 
-const EditorPage = ({ postId, existingData }) => {
-  const [htmlCode, setHtmlCode] = useState(existingData?.HTML || "");
+Et le code de EditorPage : 
+
+import { useState } from "react";
+
+const EditorPage = () => {
+  const [htmlCode, setHtmlCode] = useState("");
   const [cssCode, setCssCode] = useState("");
   const [jsCode, setJsCode] = useState("");
   const [visibleGroup, setVisibleGroup] = useState("");
-  const [name, setName] = useState(existingData?.name || "");
-  const [head, setHead] = useState(existingData?.head || "");
-  const [image, setImage] = useState(existingData?.image || "");
 
   function run() {
     const output = document.getElementById("output");
+
+    // Inject HTML and CSS content
     const documentContent = `
       ${htmlCode}
       <style>${cssCode}</style>
     `;
     output.contentDocument.body.innerHTML = documentContent;
 
+    // Execute JavaScript using eval on contentWindow
     try {
       output.contentWindow.eval(jsCode);
     } catch (error) {
@@ -31,14 +37,19 @@ const EditorPage = ({ postId, existingData }) => {
 
   const handleHtmlBalise = (e) => {
     const value = e.target.value;
+
     if (e.key === ">" && value.endsWith(">")) {
       const openingTagMatch = value.match(/<(\w+)>$/);
+
       if (openingTagMatch) {
         const tagName = openingTagMatch[1];
         const closingTag = `</${tagName}>`;
+
         const cursorPosition = e.target.selectionStart;
         const newValue = value + closingTag;
+
         setHtmlCode(newValue);
+
         setTimeout(() => {
           e.target.setSelectionRange(cursorPosition, cursorPosition);
         }, 0);
@@ -46,27 +57,8 @@ const EditorPage = ({ postId, existingData }) => {
     } else {
       setHtmlCode(value);
     }
+
     run();
-  };
-
-  const handleSave = async () => {
-    try {
-      const postData = { name, head, image, HTML: htmlCode, creator: "creatorId" }; 
-      // Remplacez "creatorId" par l'identifiant du créateur
-
-      if (postId) {
-        // Mise à jour si un postId est fourni
-        await axios.put(`/api/posts/${postId}`, postData);
-        alert("Post mis à jour avec succès !");
-      } else {
-        // Création d'un nouveau post
-        await axios.post("/api/posts", postData);
-        alert("Post créé avec succès !");
-      }
-    } catch (error) {
-      console.error("Erreur lors de la sauvegarde du post:", error);
-      alert("Erreur lors de la sauvegarde du post");
-    }
   };
 
   return (
@@ -80,7 +72,7 @@ const EditorPage = ({ postId, existingData }) => {
           <button>
             <img src="/icons/Settings.svg" alt="" />
           </button>
-          <button onClick={handleSave}>{postId ? "Mettre à jour" : "Créer"}</button>
+          <button>Enregistrer</button> {/* Bouton à modifier */}
         </div>
       </nav>
       <div className="Editor">

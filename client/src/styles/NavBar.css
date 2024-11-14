@@ -21,7 +21,7 @@
   transition-duration: 0.3s;
 }
 
-.ProfileContainer {
+.ProfilContainer {
   position: relative;
 }
 
@@ -43,13 +43,23 @@
   color: var(--TextColor);
   border-radius: 0.5vw;
   padding: 0.5vw;
-  margin-bottom: 0.5vw;
+  margin: 0;
   text-align: center;
   font-size: 1.2vw;
+  background: var(--PageBgColor);
+  transition-duration: 0.3s;
 }
 
 .dropdown-link:hover {
+  transition-duration: 0.3s;
   background-color: var(--ElementBgColor);
+}
+
+.hrDropdown {
+  width: 80%;
+  height: 0;
+  border: 0.5px #98989f solid;
+  margin: 1vw auto;
 }
 
 .logout-btn {
@@ -58,13 +68,15 @@
   background: none;
   border: none;
   padding: 0.5vw;
+  margin: 0;
   text-align: center;
-  background-color: #da3131;
   cursor: pointer;
+  transition-duration: 0.3s;
 }
 
 .logout-btn:hover {
-  background-color: #ce2f2f;
+  transition-duration: 0.3s;
+  background-color: #da3131;
 }
 
 .LinkContainer {
@@ -72,14 +84,14 @@
   display: flex;
   list-style-type: none;
   background-color: var(--ElementBgColor);
-  border-radius: 1rem;
+  border-radius: 1vw;
 }
 
 .navLink {
   color: var(--TextColor);
   text-decoration: none;
-  padding: 1.25rem 7rem;
-  font-size: 1.5vw;
+  padding: 1.25vw 7vw;
+  font-size: 1.2vw;
   position: relative;
   transition: color 0.3s;
 }
@@ -97,7 +109,7 @@
   left: 0;
   bottom: 0;
   width: 100%;
-  height: 0.2rem;
+  height: 0.2vw;
   background-color: var(--AccentColor);
   transition: width 0.3s ease;
 }
@@ -108,7 +120,7 @@
   left: 50%;
   bottom: 0;
   width: 0;
-  height: 0.2rem;
+  height: 0.2vw;
   background-color: var(--AccentColor);
   transition: width 0.3s ease, left 0.3s ease;
 }

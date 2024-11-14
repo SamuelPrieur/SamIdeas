@@ -1,0 +1,114 @@
+.profil-page {
+}
+
+.grid-container {
+  width: 100vw;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2vw;
+  padding: 2vw;
+}
+
+.item {
+  background-color: var(--ElementBgColor);
+  border-radius: 1rem;
+}
+
+.middle {
+  overflow: hidden;
+  grid-column: span 2;
+}
+
+.bannerContainer {
+  height: 20vh; /* Ou une hauteur fixe, par ex. 200px */
+  width: 100%; /* S'assure que le conteneur prenne toute la largeur */
+  overflow: hidden; /* Cache les parties de l'image qui dépassent si besoin */
+}
+
+.bannerContainer img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* L'image remplit le conteneur tout en gardant son ratio */
+  object-position: center; /* Centrer l'image si elle dépasse */
+}
+
+.ProfilPicture {
+  position: relative;
+  top: -4vw;
+  left: 3vw;
+  height: 8vw;
+  width: 8vw;
+  border-radius: 100%;
+}
+
+.ProfilInfo {
+  margin-top: -3vw;
+  padding: 0 3vw 3vw 3vw;
+}
+
+.ProfilName {
+  font-size: 1.5vw;
+}
+
+.ProfilBio {
+  margin: 1vw 0;
+  font-size: 1.2vw;
+  color: #98989f;
+}
+
+.ProfilSocial {
+  font-size: 1.2vw;
+  color: var(--AccentColor);
+  display: flex;
+  align-items: center;
+  gap: 1vw;
+}
+
+.ProfilSocial {
+  font-size: 1.2vw;
+  color: var(--AccentColor);
+  display: flex;
+  align-items: center;
+  gap: 1vw;
+}
+
+.ProfilPost {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1vw;
+  width: 100%;
+}
+
+.FirstPostProfil {
+  grid-column: span 2;
+  margin: 1vw;
+  padding: 1vw;
+  border-radius: 1rem;
+  background-color: #1e1f26;
+}
+
+.postProfil {
+  border-radius: 1rem;
+  padding: 1vw;
+  margin: 1vw;
+  background-color: #1e1f26;
+}
+
+.containerPostImage img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.FirstPostProfil img,
+.postProfil img {
+  width: 100%;
+
+  border-radius: 1rem;
+}
+
+.postProfil {
+}

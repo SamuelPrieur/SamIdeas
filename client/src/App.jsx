@@ -3,6 +3,7 @@ import TrendingPage from "@pages/TrendingPage";
 import FollowingPage from "@pages/FollowingPage";
 import YourWork from "@pages/YourWork";
 import EditorPage from "@pages/EditorPage";
+import Profil from "@pages/Profil";
 import Login from "@pages/Login";
 import Register from "@pages/Register";
 import ProtectedRoute from "@components/ProtectedRoute"; // Import du composant
@@ -11,7 +12,7 @@ const App = () => {
   return (
     <Router>
       <Routes>
-        {/* Ces routes sont accessibles à tous */}
+        {/*  routes accessibles à tous */}
         <Route path="/" element={<TrendingPage />} />
         <Route path="/Login" element={<Login />} />
         <Route path="/Register" element={<Register />} />
@@ -41,6 +42,7 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+        <Route path="/api/Profil/:id" element={<Profil />} />
       </Routes>
     </Router>
   );

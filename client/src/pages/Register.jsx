@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -24,12 +24,47 @@ const Register = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-      <input type="text" placeholder="Nom d'utilisateur" value={username} onChange={(e) => setUsername(e.target.value)} required />
-      <input type="password" placeholder="Mot de passe" value={password} onChange={(e) => setPassword(e.target.value)} required />
-      <button type="submit">Inscription</button>
-    </form>
+    <div className="ConnexionContainer">
+      <form className="Connexion box" onSubmit={handleSubmit}>
+        <h1>Bienvenue</h1>
+        <div className="divConnexionFlex">
+          <div className="divConnexion">
+            <label htmlFor="Email">Adresse mail :</label>
+            <input id="Email" name="Email" type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          </div>
+          <div className="divConnexion">
+            <label htmlFor="username">Nom d'utilisateur :</label>
+            <input
+              id="username"
+              name="username"
+              type="text"
+              placeholder="Nom d'utilisateur"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </div>
+        </div>
+
+        <div className="divConnexion">
+          <label htmlFor="Password">Mot de passe :</label>
+          <input
+            id="Password"
+            name="Password"
+            type="password"
+            placeholder="Mot de passe"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+
+        <button type="submit">Créer un compte</button>
+        <Link className="LinkConnexion" to="../Login">
+          Déjà un compte?
+        </Link>
+      </form>
+    </div>
   );
 };
 

@@ -15,12 +15,26 @@
   border-radius: 1vw;
 }
 
+.Connexion h1 {
+  text-align: center;
+  margin-bottom: 3vh;
+}
+
+.divConnexionFlex {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  gap: 1vw;
+}
+
 .divConnexion {
   text-align: start;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   margin-bottom: 1.5vw;
+  width: 100%;
 }
 
 .divConnexion label {
@@ -28,35 +42,47 @@
   font-weight: bold; /* mettre les labels en gras */
 }
 
-input[type="email"],
-input[type="password"] {
+input[id="Email"],
+input[id="username"],
+input[id="Password"] {
   width: 100%; /* remplir la largeur du conteneur */
   padding: 0.75rem; /* espacement intérieur */
-  border: 1px solid #ccc; /* bordure grise */
+  border: 1px solid var(--TextColor); /* bordure grise */
   border-radius: 0.5rem; /* coins arrondis */
   transition: border-color 0.3s; /* transition douce pour la bordure */
 }
 
-input[type="email"]:focus,
-input[type="password"]:focus {
+input[id="Email"]:focus,
+input[id="username"]:focus,
+input[id="Password"]:focus {
   border-color: var(--AccentColor); /* couleur de bordure lors du focus */
   outline: none; /* enlever le contour par défaut */
 }
 
 button {
+  margin-top: 2vh;
   padding: 0.75rem 1.5rem; /* espacement intérieur */
   background-color: var(--AccentColor); /* couleur de fond du bouton */
-  color: white; /* couleur du texte */
+  color: var(--TextColor); /* couleur du texte */
   border: none; /* pas de bordure */
   border-radius: 0.5rem; /* coins arrondis */
   cursor: pointer; /* changement de curseur au survol */
   transition: background-color 0.3s; /* transition douce pour la couleur de fond */
+  border: var(--ElementBgColor) 1px solid;
 }
 
 button:hover {
   background-color: darken(var(--AccentColor), 10%); /* couleur plus foncée au survol */
+  border: var(--AccentColor) 1px solid;
 }
 
 button:active {
   transform: scale(0.98); /* effet de pression sur le bouton */
+}
+
+.LinkConnexion {
+  text-align: center;
+  margin-top: 3vh;
+  color: var(--TextColor);
+  text-decoration: none;
 }

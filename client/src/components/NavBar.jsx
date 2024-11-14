@@ -3,20 +3,22 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
-  const [profilePicture, setProfilePicture] = useState("");
+  const [profilPicture, setProfilPicture] = useState("");
+  const userId = JSON.parse(localStorage.getItem("user"))?._id || "";
+
   const [isActive, setIsActive] = useState(false);
-  const profileRef = useRef(null); // Référence pour l'image de profil
+  const profilRef = useRef(null); // Référence pour l'image de profil
 
   const navigate = useNavigate();
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
-    if (user && user.profilePicture) {
-      setProfilePicture(user.profilePicture);
+    if (user && user.profilPicture) {
+      setProfilPicture(user.profilPicture);
     }
 
     const handleClickOutside = (event) => {
-      if (profileRef.current && !profileRef.current.contains(event.target)) {
+      if (profilRef.current && !profilRef.current.contains(event.target)) {
         setIsActive(false); // Désactiver le menu déroulant si on clique à l'extérieur
       }
     };
@@ -28,7 +30,7 @@ const Navbar = () => {
     };
   }, []);
 
-  const handleProfileClick = (event) => {
+  const handleProfilClick = (event) => {
     event.stopPropagation();
     setIsActive((prev) => !prev); // Toggle du menu déroulant
   };
@@ -52,19 +54,20 @@ const Navbar = () => {
           Your Work
         </NavLink>
       </div>
-      <div className="ProfileContainer">
+      <div className="ProfilContainer">
         <img
-          ref={profileRef}
+          ref={profilRef}
           className={`UserPP ${isActive ? "active" : "inactive"}`}
-          src={profilePicture || "/img/PPplaceholder.jpg"}
-          alt="User Profile Picture"
-          onClick={handleProfileClick}
+          src={profilPicture || "/img/PPplaceholder.jpg"}
+          alt="User Profil Picture"
+          onClick={handleProfilClick}
         />
         {isActive && (
           <div className="DropdownMenu box">
-            <NavLink to="/profile" className="dropdown-link">
-              Profile
+            <NavLink to={`/api/Profil/${userId}`} className="dropdown-link">
+              Profil
             </NavLink>
+            <hr className="hrDropdown" />
             <button className="logout-btn" onClick={handleLogout}>
               Logout
             </button>
