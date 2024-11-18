@@ -1,44 +1,24 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
-import axios from "axios";
 
-const Grid = ({ currentUserId }) => {
-  const [posts, setPosts] = useState([]);
-  const [followedUsers, setFollowedUsers] = useState([]);
-
+const Grid = ({ posts }) => {
+  const [currentUserId, setCurrentUserId] = useState(null);
+  console.log(posts);
   useEffect(() => {
-    const fetchPosts = async () => {
+    // Récupérer l'ID utilisateur depuis le localStorage
+    const storedUser = localStorage.getItem("user");
+
+    if (storedUser) {
       try {
-        const response = await axios.get("http://localhost:8080/api/posts");
-        setPosts(response.data);
+        const user = JSON.parse(storedUser); // Convertir en objet
+        setCurrentUserId(user._id); // Extraire et définir l'ID utilisateur
       } catch (error) {
-        console.error("Erreur lors de la récupération des posts :", error);
+        console.error("Erreur lors de la conversion de l'utilisateur depuis le localStorage :", error);
       }
-    };
-    fetchPosts();
-  }, []);
-
-  const handleFollow = async (userIdToFollow) => {
-    try {
-      if (followedUsers.includes(userIdToFollow)) {
-        console.log("Utilisateur déjà suivi.");
-        return;
-      }
-
-      const response = await axios.post(`http://localhost:8080/api/follow`, {
-        currentUserId,
-        userIdToFollow,
-      });
-
-      if (response.status === 200) {
-        setFollowedUsers((prev) => [...prev, userIdToFollow]);
-      } else {
-        console.error("Erreur lors du suivi :", response.data.message);
-      }
-    } catch (error) {
-      console.error("Erreur de connexion au serveur :", error);
+    } else {
+      console.error("Aucun utilisateur trouvé dans le localStorage.");
     }
-  };
+  }, []);
 
   return (
     <section className="grid-container">
@@ -48,13 +28,13 @@ const Grid = ({ currentUserId }) => {
             <div className="containerPostImage">
               <img src={post.image || "/img/placeholder.png"} alt={post.name} />
             </div>
-            <h3>{post.name}</h3>
+            <h3>{post.name || "Nouveau Post"}</h3>
             <div className="postUser">
-              <NavLink to={`/api/Profil/${post.creator._id}`} className="userInfo">
+              <NavLink to={`/Profil/${post.creator._id}`} className="userInfo">
                 <img src={post.creator.profilePicture || "/img/PPplaceholder.jpg"} alt={`Profil de ${post.creator.username}`} />
-                <p>{post.creator.username || "RealUserOfficialAccount"}</p>
+                <p>{post.creator.username || "Utilisateur"}</p>
               </NavLink>
-              <button onClick={() => handleFollow(post.creator._id)}>{followedUsers.includes(post.creator._id) ? "Following" : "Follow"}</button>
+              {currentUserId !== post.creator._id && <button>Follow</button>}
             </div>
           </div>
         ))

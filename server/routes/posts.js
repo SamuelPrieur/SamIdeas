@@ -1,12 +1,41 @@
-// routes/posts.js
 const express = require("express");
 const Post = require("../models/Post");
 const User = require("../models/User");
 
 const router = express.Router();
 
+// Affichage de tous les posts
+router.get("/posts", async (req, res) => {
+  try {
+    const posts = await Post.find().populate("creator", "username profilePicture").sort({ createdAt: -1 });
+
+    res.json(posts);
+  } catch (error) {
+    console.error("Erreur lors de la récupération des posts :", error);
+    res.status(500).json({ message: "Erreur lors de la récupération des posts." });
+  }
+});
+
+// Récupérer un post par ID
+router.get("/posts/:postId", async (req, res) => {
+  const { postId } = req.params;
+
+  try {
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({ message: "Post non trouvé." });
+    }
+
+    res.json(post);
+  } catch (error) {
+    console.error("Erreur lors de la récupération du post :", error);
+    res.status(500).json({ message: "Erreur lors de la récupération du post." });
+  }
+});
+
 // Création d'un post
-router.post("/", async (req, res) => {
+router.post("/createPost", async (req, res) => {
   const { name, head, image, HTML, CSS, JS, creator } = req.body;
 
   try {
@@ -19,7 +48,7 @@ router.post("/", async (req, res) => {
 });
 
 // Mise à jour d'un post
-router.put("/:postId", async (req, res) => {
+router.put("/updatePost/:postId", async (req, res) => {
   const { postId } = req.params;
   const { name, head, image, HTML, CSS, JS, creator } = req.body;
 
@@ -40,11 +69,6 @@ router.put("/:postId", async (req, res) => {
 router.get("/user/:creatorId", async (req, res) => {
   try {
     const posts = await Post.find({ creator: req.params.creatorId });
-    console.log(posts);
-
-    if (!posts.length) {
-      return res.status(404).json({ message: "Aucun post trouvé pour cet utilisateur." });
-    }
 
     res.json(posts);
   } catch (error) {

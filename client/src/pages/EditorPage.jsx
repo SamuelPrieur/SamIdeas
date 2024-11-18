@@ -1,14 +1,60 @@
-import { useState } from "react";
+import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
 import axios from "axios";
 
-const EditorPage = ({ postId, existingData }) => {
-  const [htmlCode, setHtmlCode] = useState(existingData?.HTML || "");
+const EditorPage = () => {
+  const { postId } = useParams(); // Récupérer l'ID depuis l'URL
+
+  const [htmlCode, setHtmlCode] = useState("");
   const [cssCode, setCssCode] = useState("");
   const [jsCode, setJsCode] = useState("");
   const [visibleGroup, setVisibleGroup] = useState("");
-  const [name, setName] = useState(existingData?.name || "");
-  const [head, setHead] = useState(existingData?.head || "");
-  const [image, setImage] = useState(existingData?.image || "");
+  const [name, setName] = useState("");
+  const [head, setHead] = useState("");
+  const [image, setImage] = useState("");
+  const [currentUserId, setCurrentUserId] = useState(null);
+  const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+
+    if (storedUser) {
+      try {
+        const user = JSON.parse(storedUser);
+        setCurrentUserId(user._id);
+      } catch (error) {
+        console.error("Erreur lors de la conversion de l'utilisateur depuis le localStorage :", error);
+      }
+    } else {
+      console.error("Aucun utilisateur trouvé dans le localStorage.");
+    }
+  }, []);
+
+  // Récupérer les données du post si un `postId` est fourni
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8080/api/posts/${postId}`);
+        const post = response.data;
+
+        setHtmlCode(post.HTML || "");
+        setCssCode(post.CSS || "");
+        setJsCode(post.JS || "");
+        setName(post.name || "");
+        setHead(post.head || "");
+        setImage(post.image || "");
+
+        // Recompiler le code après avoir défini les données
+        setTimeout(run, 0); // Utilisation de setTimeout pour s'assurer que le DOM est prêt
+      } catch (error) {
+        console.error("Erreur lors de la récupération du post :", error);
+      }
+    };
+
+    if (postId) {
+      fetchPost();
+    }
+  }, [postId]);
 
   function run() {
     const output = document.getElementById("output");
@@ -27,6 +73,42 @@ const EditorPage = ({ postId, existingData }) => {
 
   const handleLabelClick = (group) => {
     setVisibleGroup(visibleGroup === group ? "" : group);
+  };
+
+  const handleSave = async () => {
+    if (!currentUserId) {
+      alert("Utilisateur non connecté. Veuillez vous reconnecter.");
+      return;
+    }
+
+    try {
+      const postData = {
+        name,
+        head,
+        image,
+        HTML: htmlCode,
+        CSS: cssCode,
+        JS: jsCode,
+        creator: currentUserId,
+      };
+
+      if (postId) {
+        await axios.put(`http://localhost:8080/api/updatePost/${postId}`, postData);
+        alert("Post mis à jour avec succès !");
+      } else {
+        const response = await axios.post("http://localhost:8080/api/createPost", postData);
+        alert("Post créé avec succès !");
+        // Rediriger vers le nouveau post créé
+        window.location.href = `/EditorPage/${response.data._id}`;
+      }
+    } catch (error) {
+      console.error("Erreur lors de la sauvegarde du post :", error);
+      alert("Erreur lors de la sauvegarde du post");
+    }
+  };
+
+  const toggleInfoModal = () => {
+    setIsInfoModalOpen(!isInfoModalOpen);
   };
 
   const handleHtmlBalise = (e) => {
@@ -49,32 +131,18 @@ const EditorPage = ({ postId, existingData }) => {
     run();
   };
 
-  const handleSave = async () => {
-    try {
-      const postData = { name, head, image, HTML: htmlCode, creator: "creatorId" }; 
-      // Remplacez "creatorId" par l'identifiant du créateur
-
-      if (postId) {
-        // Mise à jour si un postId est fourni
-        await axios.put(`/api/posts/${postId}`, postData);
-        alert("Post mis à jour avec succès !");
-      } else {
-        // Création d'un nouveau post
-        await axios.post("/api/posts", postData);
-        alert("Post créé avec succès !");
-      }
-    } catch (error) {
-      console.error("Erreur lors de la sauvegarde du post:", error);
-      alert("Erreur lors de la sauvegarde du post");
+  useEffect(() => {
+    if (htmlCode && cssCode && jsCode) {
+      setTimeout(run, 100); // Utilisation de setTimeout pour s'assurer que le DOM est prêt
     }
-  };
+  }, [htmlCode, cssCode, jsCode]);
 
   return (
     <div className="EditorContainer">
       <nav className="ActionBar">
         <img src="/img/PPplaceholder.jpg" alt="" />
         <div>
-          <button>
+          <button onClick={toggleInfoModal}>
             <img src="/icons/Info.svg" alt="" />
           </button>
           <button>
@@ -83,6 +151,20 @@ const EditorPage = ({ postId, existingData }) => {
           <button onClick={handleSave}>{postId ? "Mettre à jour" : "Créer"}</button>
         </div>
       </nav>
+
+      {/* Modal Info */}
+      {isInfoModalOpen && (
+        <div className={`modal-overlay ${isInfoModalOpen ? "open" : ""}`}>
+          <div className="modal-content">
+            <h2>Information</h2>
+            {/* Informations modales */}
+            <button className="closeButton" onClick={toggleInfoModal}>
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="Editor">
         <iframe className="box" id="output"></iframe>
         <section className="container">

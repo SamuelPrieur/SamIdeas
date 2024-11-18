@@ -1,5 +1,5 @@
 .grid-container {
-  margin: 0 auto;
+  margin: 0 auto 10vh auto;
   width: 90vw;
   display: grid;
   grid-template-columns: repeat(3, 1fr); /* Crée 3 colonnes égales */

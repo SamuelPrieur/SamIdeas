@@ -51,7 +51,7 @@ const ProfilPage = () => {
     <div className="profil-page">
       <Navbar />
 
-      <div className="grid-container">
+      <div className="grid-containerProfil">
         <div></div>
         <section className="item box middle">
           <div className="bannerContainer">

@@ -28,12 +28,18 @@ router.post("/register", async (req, res) => {
     if (existingUser) return res.status(400).json({ message: "Utilisateur déjà existant." });
 
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Création de l'utilisateur avec les valeurs par défaut
     const user = new User({
       email,
       username,
       password: hashedPassword,
       isVerified: false,
       follows: [],
+      profilePicture: "", // URL de l'image de profil par défaut
+      banner: "", // URL de l'image de bannière par défaut
+      bio: "", // Bio par défaut (chaîne vide)
+      socialLinks: [], // Liens sociaux par défaut (tableau vide)
     });
 
     await user.save();

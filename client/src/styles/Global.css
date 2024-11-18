@@ -36,5 +36,32 @@ body {
   position: relative;
   width: 100%;
   border-radius: 1rem;
-  padding-bottom: 75%;
+  aspect-ratio: 14/9;
+}
+
+.NewPostButton {
+  position: fixed;
+  bottom: 2vh;
+  right: 2vh;
+  padding: 1rem 1.5rem;
+  background-color: var(--AccentColor);
+  color: var(--TextColor);
+  text-decoration: none;
+  text-align: center;
+  border-radius: 1000vw;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.NewPostButton p {
+  margin: 0; /* Supprime les marges par défaut */
+  font-size: 2.5vh; /* Taille du texte */
+  white-space: nowrap; /* Empêche le texte de passer à la ligne */
+}
+
+.NewPostButton svg {
+  height: 3vh;
+  width: auto;
+  flex-shrink: 0;
 }

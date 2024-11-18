@@ -1,3 +1,13 @@
+@keyframes fadeIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
 * {
   box-sizing: border-box;
   padding: 0;
@@ -63,7 +73,7 @@
   max-width: 100%;
   resize: both;
   overflow: auto;
-  background-color: white;
+  background-color: var(--TextColor);
   border-radius: 10px;
 }
 
@@ -94,8 +104,8 @@ label {
   width: 100%;
   height: auto;
   resize: none;
-  color: white;
-  background-color: #22232b;
+  color: var(--TextColor);
+  background-color: var(--SecondaryElementBgColor);
   border: 0;
   outline: 0;
   padding: 10px;
@@ -109,10 +119,71 @@ label {
   font-family: monospace;
   font-size: 16px;
   padding: 10px;
-  border: 1px solid #ddd;
   min-height: 200px;
 }
 
 .html-tag {
   color: red;
+}
+
+/* Fond Noir */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.modal-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal-content {
+  position: relative;
+  color: var(--TextColor);
+  background-color: var(--SecondaryElementBgColor);
+  padding: 2vw;
+  border-radius: 10px;
+  max-width: 40vw;
+
+  animation: fadeIn 0.3s ease;
+}
+.modal-content button {
+  margin-top: 4vh;
+  text-align: center;
+}
+
+.modal-content h2 {
+  text-align: center;
+}
+.modal-content h3 {
+  margin-top: 3vh;
+}
+
+.Information {
+  margin: 2vh 0 0 3vh;
+  display: flex;
+  align-items: center;
+  gap: 1vw;
+}
+
+.hrInfo {
+  width: 1px;
+  height: auto;
+  background-color: var(--TextColor);
+  border: none;
+  align-self: stretch;
+}
+
+.closeButton {
+  width: 100%;
 }

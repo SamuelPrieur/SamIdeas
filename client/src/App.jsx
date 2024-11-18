@@ -35,13 +35,14 @@ const App = () => {
           }
         />
         <Route
-          path="/EditorPage"
+          path="/EditorPage/:postId"
           element={
             <ProtectedRoute>
               <EditorPage />
             </ProtectedRoute>
           }
         />
+
         <Route path="/api/Profil/:id" element={<Profil />} />
       </Routes>
     </Router>

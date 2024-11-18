@@ -17,7 +17,7 @@ const Register = () => {
         password,
       });
       console.log(response.data.message); // Affiche le message de succès
-      navigate("/"); // Redirection après l'inscription réussie
+      navigate("/Login"); // Redirection après l'inscription réussie
     } catch (error) {
       console.error("Erreur lors de l'inscription :", error.response.data.message);
     }
