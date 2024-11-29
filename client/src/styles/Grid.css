@@ -23,6 +23,19 @@
   justify-content: space-around;
 }
 
+.containerPostImage {
+  display: block;
+  border-radius: 1rem;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  border-radius: 1rem;
+  aspect-ratio: 14/9;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
 .userInfo {
   width: 100%;
   display: flex;
@@ -42,4 +55,15 @@
   background-color: var(--SecondaryElementBgColor);
   padding: 0.5vw 1vw;
   border-radius: 3px;
+}
+
+.AucunPost {
+  grid-column: span 3; /* Pour occuper toute la largeur de la grille */
+  display: flex; /* Activer flexbox */
+  align-items: center; /* Centrer verticalement */
+  justify-content: center; /* Centrer horizontalement */
+  height: 50vh; /* Prendre toute la hauteur disponible */
+  text-align: center; /* Centrer le texte */
+  font-size: 2rem; /* Ajuster la taille de la police pour une meilleure lisibilité */
+  color: var(--LowTextColor); /* Utiliser une couleur adaptée */
 }

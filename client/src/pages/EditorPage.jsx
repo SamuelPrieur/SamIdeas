@@ -1,5 +1,5 @@
-import { useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams, NavLink } from "react-router-dom";
 import axios from "axios";
 
 const EditorPage = () => {
@@ -14,6 +14,8 @@ const EditorPage = () => {
   const [image, setImage] = useState("");
   const [currentUserId, setCurrentUserId] = useState(null);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false); // Modal des paramètres
+  const [isCreator, setIsCreator] = useState(false);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -30,7 +32,6 @@ const EditorPage = () => {
     }
   }, []);
 
-  // Récupérer les données du post si un `postId` est fourni
   useEffect(() => {
     const fetchPost = async () => {
       try {
@@ -44,8 +45,8 @@ const EditorPage = () => {
         setHead(post.head || "");
         setImage(post.image || "");
 
-        // Recompiler le code après avoir défini les données
-        setTimeout(run, 0); // Utilisation de setTimeout pour s'assurer que le DOM est prêt
+        setIsCreator(post.creator === currentUserId);
+        setTimeout(run, 0);
       } catch (error) {
         console.error("Erreur lors de la récupération du post :", error);
       }
@@ -54,9 +55,21 @@ const EditorPage = () => {
     if (postId) {
       fetchPost();
     }
-  }, [postId]);
+  }, [postId, currentUserId]);
 
-  function run() {
+  const handleSaveSettings = async () => {
+    try {
+      const updatedData = { name, head, image };
+      await axios.put(`http://localhost:8080/api/updatePost/${postId}`, updatedData);
+      alert("Paramètres mis à jour avec succès !");
+      setIsSettingsModalOpen(false);
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour des paramètres :", error);
+      alert("Une erreur est survenue.");
+    }
+  };
+
+  const run = () => {
     const output = document.getElementById("output");
     const documentContent = `
       ${htmlCode}
@@ -69,7 +82,7 @@ const EditorPage = () => {
     } catch (error) {
       console.error("Error in JavaScript code:", error);
     }
-  }
+  };
 
   const handleLabelClick = (group) => {
     setVisibleGroup(visibleGroup === group ? "" : group);
@@ -89,13 +102,27 @@ const EditorPage = () => {
         HTML: htmlCode,
         CSS: cssCode,
         JS: jsCode,
-        creator: currentUserId,
+        creator: currentUserId, // L'utilisateur connecté est toujours le créateur dans ce cas
       };
 
       if (postId) {
-        await axios.put(`http://localhost:8080/api/updatePost/${postId}`, postData);
-        alert("Post mis à jour avec succès !");
+        // Récupérer le post pour vérifier le créateur
+        const response = await axios.get(`http://localhost:8080/api/posts/${postId}`);
+        const originalPost = response.data;
+
+        if (originalPost.creator === currentUserId) {
+          // L'utilisateur est le créateur : mettre à jour le post
+          await axios.put(`http://localhost:8080/api/updatePost/${postId}`, postData);
+          alert("Post mis à jour avec succès !");
+        } else {
+          // L'utilisateur n'est pas le créateur : créer un nouveau post
+          const newResponse = await axios.post("http://localhost:8080/api/createPost", postData);
+          alert("Vous n'êtes pas le créateur de ce post. Une copie a été créée avec succès !");
+          // Rediriger vers le nouveau post créé
+          window.location.href = `/EditorPage/${newResponse.data._id}`;
+        }
       } else {
+        // Pas de `postId`, création d'un nouveau post
         const response = await axios.post("http://localhost:8080/api/createPost", postData);
         alert("Post créé avec succès !");
         // Rediriger vers le nouveau post créé
@@ -132,7 +159,7 @@ const EditorPage = () => {
   };
 
   useEffect(() => {
-    if (htmlCode && cssCode && jsCode) {
+    if (htmlCode || cssCode || jsCode) {
       setTimeout(run, 100); // Utilisation de setTimeout pour s'assurer que le DOM est prêt
     }
   }, [htmlCode, cssCode, jsCode]);
@@ -140,27 +167,64 @@ const EditorPage = () => {
   return (
     <div className="EditorContainer">
       <nav className="ActionBar">
-        <img src="/img/PPplaceholder.jpg" alt="" />
+        <NavLink
+          to={`/`}
+          className="logo"
+          style={{
+            backgroundImage: `url("/img/PPplaceholder.jpg")`,
+          }}
+        ></NavLink>
         <div>
-          <button onClick={toggleInfoModal}>
+          <button onClick={() => setIsInfoModalOpen(!isInfoModalOpen)}>
             <img src="/icons/Info.svg" alt="" />
           </button>
-          <button>
+          <button onClick={() => setIsSettingsModalOpen(true)}>
             <img src="/icons/Settings.svg" alt="" />
           </button>
-          <button onClick={handleSave}>{postId ? "Mettre à jour" : "Créer"}</button>
+          <button onClick={handleSave}>{postId ? (isCreator ? "Mettre à jour" : "Créer une copie") : "Créer"}</button>
         </div>
       </nav>
 
       {/* Modal Info */}
       {isInfoModalOpen && (
-        <div className={`modal-overlay ${isInfoModalOpen ? "open" : ""}`}>
+        <div className="modal-overlay">
           <div className="modal-content">
             <h2>Information</h2>
-            {/* Informations modales */}
-            <button className="closeButton" onClick={toggleInfoModal}>
+            <p>Voici les instructions...</p>
+            <button className="closeButton" onClick={() => setIsInfoModalOpen(false)}>
               Close
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Settings */}
+      {isSettingsModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2>Modifier les paramètres du post</h2>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSaveSettings();
+              }}
+            >
+              <label>
+                Nom :
+                <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
+              </label>
+              <label>
+                Image (URL) :
+                <input type="text" value={image} onChange={(e) => setImage(e.target.value)} required />
+              </label>
+              <label>
+                Head :<textarea value={head} onChange={(e) => setHead(e.target.value)} rows="4"></textarea>
+              </label>
+              <button type="submit">Enregistrer</button>
+              <button type="button" onClick={() => setIsSettingsModalOpen(false)}>
+                Annuler
+              </button>
+            </form>
           </div>
         </div>
       )}

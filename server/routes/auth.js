@@ -10,12 +10,42 @@ router.get("/Profil/:id", async (req, res) => {
   const userId = req.params.id;
 
   try {
-    const user = await User.findById(userId).select("username profilePicture bio socialLinks");
+    const user = await User.findById(userId).select("username profilePicture banner bio follows socialLinks");
     if (!user) return res.status(404).json({ message: "Utilisateur non trouvé." });
 
     res.json(user);
   } catch (error) {
     res.status(500).json({ message: "Erreur lors de la récupération de l'utilisateur." });
+  }
+});
+
+router.post("/getProfiles", async (req, res) => {
+  const { userIds } = req.body; // Attendre un tableau d'IDs dans le body
+
+  try {
+    // Trouver tous les utilisateurs correspondants aux IDs
+    const users = await User.find({ _id: { $in: userIds } }).select("username profilePicture banner bio socialLinks");
+    res.json(users);
+  } catch (error) {
+    console.error("Erreur lors de la récupération des profils :", error);
+    res.status(500).json({ message: "Erreur serveur." });
+  }
+});
+
+router.put("/ModifyProfil/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedData = req.body;
+
+    const updatedUser = await User.findByIdAndUpdate(id, updatedData, { new: true });
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "Utilisateur non trouvé." });
+    }
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    res.status(500).json({ message: "Erreur lors de la mise à jour du profil.", error });
   }
 });
 
@@ -67,14 +97,17 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// Fonction pour suivre un utilisateur
 router.post("/follow", async (req, res) => {
   const { currentUserId, userIdToFollow } = req.body;
 
   try {
     const currentUser = await User.findById(currentUserId);
     if (!currentUser) return res.status(404).json({ message: "Utilisateur non trouvé." });
-    if (currentUser.follows.includes(userIdToFollow)) return res.status(400).json({ message: "Utilisateur déjà suivi." });
+
+    // Vérifier si l'utilisateur est déjà suivi
+    if (currentUser.follows.includes(userIdToFollow)) {
+      return res.status(200).json({ message: "Utilisateur déjà suivi." });
+    }
 
     currentUser.follows.push(userIdToFollow);
     await currentUser.save();
@@ -99,6 +132,23 @@ router.post("/unfollow", async (req, res) => {
     res.status(200).json({ message: "Utilisateur non suivi avec succès." });
   } catch (error) {
     res.status(500).json({ message: "Erreur lors du désabonnement." });
+  }
+});
+
+router.get("/unfollowed/:id", async (req, res) => {
+  const userId = req.params.id;
+
+  try {
+    const user = await User.findById(userId).select("follows");
+    if (!user) return res.status(404).json({ message: "Utilisateur introuvable." });
+
+    // Récupérer tous les utilisateurs sauf ceux qui sont suivis et l'utilisateur actuel
+    const unfollowedUsers = await User.find({ _id: { $nin: [...user.follows, userId] } }).select("username _id");
+
+    res.json(unfollowedUsers);
+  } catch (error) {
+    console.error("Erreur lors de la récupération des utilisateurs non suivis :", error);
+    res.status(500).json({ message: "Erreur serveur." });
   }
 });
 

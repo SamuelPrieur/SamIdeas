@@ -42,7 +42,13 @@ const Navbar = () => {
 
   return (
     <nav className="SocialNavBar">
-      <img className="Logo" src="#" alt="Logo Sam Ideas" />
+      <NavLink
+        to={`/`} // Corrige l'utilisation des backticks
+        className="logo"
+        style={{
+          backgroundImage: `url("/img/PPplaceholder.jpg")`,
+        }}
+      ></NavLink>
       <div className="LinkContainer">
         <NavLink to="/" className={({ isActive }) => (isActive ? "navLink active" : "navLink")}>
           Trending

@@ -7,6 +7,7 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 2vw;
   padding: 2vw;
+  grid-auto-rows: auto;
 }
 
 .item {
@@ -32,6 +33,13 @@
   object-position: center; /* Centrer l'image si elle dépasse */
 }
 
+.ImageAndButton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .ProfilPicture {
   position: relative;
   top: -4vw;
@@ -39,6 +47,32 @@
   height: 8vw;
   width: 8vw;
   border-radius: 100%;
+}
+
+.Modify {
+  position: relative;
+  top: -4vw;
+  right: 3vw;
+  border-radius: 10000px;
+  width: 5vh;
+  height: 5vh;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background-color: var(--AccentColor);
+}
+.Modify:hover {
+  border: var(--AccentColor) solid 1px;
+  background-color: var(--ElementBgColor);
+}
+
+.Modify svg {
+  width: 3vh;
+  transition-duration: 300ms;
+}
+
+.Modify:hover svg {
+  width: 3.25vh;
 }
 
 .ProfilInfo {
@@ -72,6 +106,10 @@
   gap: 1vw;
 }
 
+.ProfilPosts {
+  margin: 1vw;
+}
+
 .ProfilPost {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -81,7 +119,7 @@
 
 .FirstPostProfil {
   grid-column: span 2;
-  margin: 1vw;
+
   padding: 1vw;
   border-radius: 1rem;
   background-color: #1e1f26;
@@ -90,25 +128,114 @@
 .postProfil {
   border-radius: 1rem;
   padding: 1vw;
-  margin: 1vw;
   background-color: #1e1f26;
 }
 
-.containerPostImage img {
-  position: absolute;
+.containerPostImage {
+  margin-bottom: 1.5vh;
+}
+
+.postProfil h3,
+.FirstPostProfil h3 {
+  margin-left: 1.8vh;
+}
+
+.right {
+  padding: 1.5vw;
+  top: 0; /* Si nécessaire pour la position sticky */
+  position: sticky;
+}
+
+.middle {
+  align-self: stretch;
+}
+
+.right {
+  align-self: start;
+}
+.right h2 {
+  margin-bottom: 1.5vw;
+}
+
+.rightInfo {
+  display: flex;
+  gap: 1vw;
+}
+
+.rightInfo img {
+  height: 3vw;
+  width: 3vw;
+  border-radius: 100%;
+}
+
+.rightInfo div h2 {
+  font-size: ;
+  margin-bottom: 1vh;
+}
+
+.rightInfo div p {
+  font-size: ;
+  color: var(--LowTextColor);
+}
+
+.rightUser button {
+  font-size: ;
+  width: 100%;
+  padding: 1vh 0;
+  border-radius: 1000px;
+  border: var(--AccentColor) solid 1px;
+  background-color: var(--ElementBgColor);
+}
+
+.rightUser hr {
+  width: 100%;
+  height: 1px;
+  margin: 3vh 0;
+  padding: 0.5px 0;
+  background-color: var(--LowTextColor);
+}
+
+/* Overlay */
+
+.overlay {
+  position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
 }
 
-.FirstPostProfil img,
-.postProfil img {
-  width: 100%;
-
+.overlay-content {
+  background: var(--ElementBgColor);
+  padding: 2rem;
   border-radius: 1rem;
+  width: 90%;
+  max-width: 500px;
+  color: var(--TextColor);
+  position: relative;
 }
 
-.postProfil {
+.overlay-content h2 {
+  margin-bottom: 1rem;
+}
+
+.close-overlay {
+  position: absolute;
+  top: 0;
+  right: 1vh;
+  background: none;
+  border: none;
+  color: var(--TextColor);
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.close-overlay:hover {
+  border: none;
+  color: var(--AccentColor);
 }
