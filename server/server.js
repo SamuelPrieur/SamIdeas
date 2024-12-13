@@ -17,6 +17,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // Routes
 app.use("/api", require("./routes/auth"));
 app.use("/api", require("./routes/posts"));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Démarrage du serveur
 const PORT = process.env.PORT || 8080;

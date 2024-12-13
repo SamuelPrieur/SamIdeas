@@ -81,17 +81,17 @@
 }
 
 .ProfilName {
-  font-size: 1.5vw;
+  font-size: var(--text-size-2);
 }
 
 .ProfilBio {
   margin: 1vw 0;
-  font-size: 1.2vw;
+  font-size: var(--text-size-1);
   color: #98989f;
 }
 
 .ProfilSocial {
-  font-size: 1.2vw;
+  font-size: var(--text-size-1);
   color: var(--AccentColor);
   display: flex;
   align-items: center;
@@ -99,7 +99,7 @@
 }
 
 .ProfilSocial {
-  font-size: 1.2vw;
+  font-size: var(--text-size-1);
   color: var(--AccentColor);
   display: flex;
   align-items: center;
@@ -142,8 +142,6 @@
 
 .right {
   padding: 1.5vw;
-  top: 0; /* Si nécessaire pour la position sticky */
-  position: sticky;
 }
 
 .middle {
@@ -169,17 +167,22 @@
 }
 
 .rightInfo div h2 {
-  font-size: ;
+  color: var(--TextColor);
+  font-size: var(--text-size-2);
   margin-bottom: 1vh;
 }
 
 .rightInfo div p {
-  font-size: ;
+  font-size: var(--text-size-1);
   color: var(--LowTextColor);
 }
 
+.rightUser {
+  list-style: none;
+}
+
 .rightUser button {
-  font-size: ;
+  font-size: var(--text-size-1);
   width: 100%;
   padding: 1vh 0;
   border-radius: 1000px;
@@ -215,7 +218,7 @@
   padding: 2rem;
   border-radius: 1rem;
   width: 90%;
-  max-width: 500px;
+  max-width: 50vw;
   color: var(--TextColor);
   position: relative;
 }
@@ -231,11 +234,81 @@
   background: none;
   border: none;
   color: var(--TextColor);
-  font-size: 1.5rem;
+  font-size: var(--text-size-4);
   cursor: pointer;
 }
 
 .close-overlay:hover {
   border: none;
   color: var(--AccentColor);
+}
+
+.modifyProfil {
+  background-color: var(--ElementBgColor);
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2vw;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.modifyProfil div {
+  display: flex;
+  gap: 1vw;
+  width: 100%;
+}
+
+.modifyProfil div label {
+  display: flex;
+  flex-direction: column;
+}
+
+.modifyProfil label {
+  font-size: var(--text-size-2);
+  color: var(--TextColor);
+}
+
+.modifyProfil input[type="file"] {
+  width: 100%;
+  margin-top: 0.5vw;
+}
+
+.modifyProfil input[type="text"],
+.modifyProfil textarea {
+  padding: 1vw;
+  margin-top: 0.5vw;
+  font-size: 1.2vw;
+  color: var(--TextColor);
+  font-size: var(--text-size-1);
+  background-color: var(--SecondaryElementBgColor);
+  border-radius: 1vw;
+  width: 100%;
+}
+
+.modifyProfil textarea {
+  resize: vertical;
+  min-height: 25vh;
+}
+
+.modifyProfil input[type="file"] {
+  padding: 0;
+  font-size: var(--text-size-1);
+}
+
+.modifyProfil button {
+  background-color: var(--AccentColor);
+  color: var(--TextColor);
+  border: none;
+  padding: 1vw;
+  border-radius: 1rem;
+  font-size: var(--text-size-1);
+  cursor: pointer;
+  width: 100%;
+}
+
+.modifyProfil button[type="button"] {
+  background-color: var(--ElementBgColor);
+  color: var(--AccentColor);
+  border: 1px solid var(--AccentColor);
 }

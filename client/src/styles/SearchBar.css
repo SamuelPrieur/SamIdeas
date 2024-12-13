@@ -16,7 +16,7 @@
 
 .SearchBar input {
   color: var(--TextColor);
-  font-size: 1rem;
+  font-size: var(--text-size-1);
   background-color: var(--ElementBgColor);
   border: none;
   width: 100%;

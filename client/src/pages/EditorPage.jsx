@@ -1,9 +1,68 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, NavLink } from "react-router-dom";
 import axios from "axios";
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
+import Prism from "prismjs";
+import "prismjs/themes/prism.css";
+
+const CodeInput = ({ lang, code, setCode, readOnly, placeholder, onKeyUp }) => {
+  const refEditing = useRef(null);
+  const refPre = useRef(null);
+
+  const handleInput = () => {
+    const editing = refEditing.current;
+    setCode(editing.value);
+  };
+
+  useEffect(() => {
+    Prism.highlightAll();
+  }, [code]);
+
+  useEffect(() => {
+    // Synchroniser le défilement
+    const synchronizeScroll = () => {
+      if (refEditing.current && refPre.current) {
+        const toTop = refEditing.current.scrollTop;
+        const toLeft = refEditing.current.scrollLeft;
+
+        refPre.current.scrollTop = toTop;
+        refPre.current.scrollLeft = toLeft;
+      }
+    };
+
+    const textarea = refEditing.current;
+    if (textarea) {
+      textarea.addEventListener("scroll", synchronizeScroll);
+    }
+
+    return () => {
+      if (textarea) {
+        textarea.removeEventListener("scroll", synchronizeScroll);
+      }
+    };
+  }, []);
+
+  return (
+    <div className="code-input">
+      <pre className="highlighting" aria-hidden="true" ref={refPre}>
+        <code className={`language-${lang}`}>{code}</code>
+      </pre>
+      <textarea
+        className="editing"
+        ref={refEditing}
+        onInput={handleInput}
+        onKeyUp={onKeyUp}
+        value={code}
+        spellCheck="false"
+        placeholder={placeholder}
+      ></textarea>
+    </div>
+  );
+};
 
 const EditorPage = () => {
-  const { postId } = useParams(); // Récupérer l'ID depuis l'URL
+  const { postId } = useParams();
 
   const [htmlCode, setHtmlCode] = useState("");
   const [cssCode, setCssCode] = useState("");
@@ -11,15 +70,14 @@ const EditorPage = () => {
   const [visibleGroup, setVisibleGroup] = useState("");
   const [name, setName] = useState("");
   const [head, setHead] = useState("");
-  const [image, setImage] = useState("");
+  const [imageFile, setImageFile] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
-  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false); // Modal des paramètres
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isCreator, setIsCreator] = useState(false);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-
     if (storedUser) {
       try {
         const user = JSON.parse(storedUser);
@@ -43,7 +101,6 @@ const EditorPage = () => {
         setJsCode(post.JS || "");
         setName(post.name || "");
         setHead(post.head || "");
-        setImage(post.image || "");
 
         setIsCreator(post.creator === currentUserId);
         setTimeout(run, 0);
@@ -59,8 +116,17 @@ const EditorPage = () => {
 
   const handleSaveSettings = async () => {
     try {
-      const updatedData = { name, head, image };
-      await axios.put(`http://localhost:8080/api/updatePost/${postId}`, updatedData);
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("head", head);
+      if (imageFile) formData.append("image", imageFile);
+
+      const response = await axios.put(`http://localhost:8080/api/updatePost/${postId}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
       alert("Paramètres mis à jour avec succès !");
       setIsSettingsModalOpen(false);
     } catch (error) {
@@ -70,18 +136,28 @@ const EditorPage = () => {
   };
 
   const run = () => {
-    const output = document.getElementById("output");
-    const documentContent = `
-      ${htmlCode}
-      <style>${cssCode}</style>
+    const fullHTML = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Preview</title>
+        ${head}
+        <style>${cssCode}</style>
+      </head>
+      <body>
+        ${htmlCode}
+        <script>${jsCode}</script>
+      </body>
+      </html>
     `;
-    output.contentDocument.body.innerHTML = documentContent;
 
-    try {
-      output.contentWindow.eval(jsCode);
-    } catch (error) {
-      console.error("Error in JavaScript code:", error);
-    }
+    const blob = new Blob([fullHTML], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+
+    const output = document.getElementById("output");
+    output.src = url;
   };
 
   const handleLabelClick = (group) => {
@@ -95,37 +171,42 @@ const EditorPage = () => {
     }
 
     try {
-      const postData = {
-        name,
-        head,
-        image,
-        HTML: htmlCode,
-        CSS: cssCode,
-        JS: jsCode,
-        creator: currentUserId, // L'utilisateur connecté est toujours le créateur dans ce cas
-      };
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("head", head);
+      formData.append("HTML", htmlCode);
+      formData.append("CSS", cssCode);
+      formData.append("JS", jsCode);
+      formData.append("creator", currentUserId);
+      if (imageFile) formData.append("image", imageFile);
 
       if (postId) {
-        // Récupérer le post pour vérifier le créateur
         const response = await axios.get(`http://localhost:8080/api/posts/${postId}`);
         const originalPost = response.data;
 
         if (originalPost.creator === currentUserId) {
-          // L'utilisateur est le créateur : mettre à jour le post
-          await axios.put(`http://localhost:8080/api/updatePost/${postId}`, postData);
+          await axios.put(`http://localhost:8080/api/updatePost/${postId}`, formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
           alert("Post mis à jour avec succès !");
         } else {
-          // L'utilisateur n'est pas le créateur : créer un nouveau post
-          const newResponse = await axios.post("http://localhost:8080/api/createPost", postData);
+          const newResponse = await axios.post("http://localhost:8080/api/createPost", formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
           alert("Vous n'êtes pas le créateur de ce post. Une copie a été créée avec succès !");
-          // Rediriger vers le nouveau post créé
           window.location.href = `/EditorPage/${newResponse.data._id}`;
         }
       } else {
-        // Pas de `postId`, création d'un nouveau post
-        const response = await axios.post("http://localhost:8080/api/createPost", postData);
+        const response = await axios.post("http://localhost:8080/api/createPost", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
         alert("Post créé avec succès !");
-        // Rediriger vers le nouveau post créé
         window.location.href = `/EditorPage/${response.data._id}`;
       }
     } catch (error) {
@@ -134,52 +215,86 @@ const EditorPage = () => {
     }
   };
 
+  const handleImageChange = (e) => {
+    setImageFile(e.target.files[0]);
+  };
+
   const toggleInfoModal = () => {
     setIsInfoModalOpen(!isInfoModalOpen);
   };
 
   const handleHtmlBalise = (e) => {
-    const value = e.target.value;
+    const textarea = e.target;
+    const value = textarea.value;
+    const cursorPosition = textarea.selectionStart;
+
     if (e.key === ">" && value.endsWith(">")) {
-      const openingTagMatch = value.match(/<(\w+)>$/);
+      const openingTagMatch = value.slice(0, cursorPosition).match(/<(\w+)>$/);
       if (openingTagMatch) {
         const tagName = openingTagMatch[1];
         const closingTag = `</${tagName}>`;
-        const cursorPosition = e.target.selectionStart;
-        const newValue = value + closingTag;
+
+        const newValue = value.slice(0, cursorPosition) + closingTag + value.slice(cursorPosition);
+
         setHtmlCode(newValue);
+
         setTimeout(() => {
-          e.target.setSelectionRange(cursorPosition, cursorPosition);
+          textarea.setSelectionRange(cursorPosition, cursorPosition);
         }, 0);
       }
-    } else {
-      setHtmlCode(value);
     }
-    run();
   };
 
   useEffect(() => {
     if (htmlCode || cssCode || jsCode) {
-      setTimeout(run, 100); // Utilisation de setTimeout pour s'assurer que le DOM est prêt
+      setTimeout(run, 100);
     }
   }, [htmlCode, cssCode, jsCode]);
+
+  const handleDownloadZip = () => {
+    const zip = new JSZip();
+
+    const fullHtml = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>${name || "Mon Projet"}</title>
+        ${head}
+        <link rel="stylesheet" href="style.css">
+      </head>
+      <body>
+        ${htmlCode}
+        <script src="script.js"></script>
+      </body>
+      </html>
+    `;
+
+    zip.file("index.html", fullHtml.trim());
+    zip.file("style.css", cssCode);
+    zip.file("script.js", jsCode);
+
+    zip.generateAsync({ type: "blob" }).then((content) => {
+      saveAs(content, `${name || "project"}.zip`);
+    });
+  };
 
   return (
     <div className="EditorContainer">
       <nav className="ActionBar">
-        <NavLink
-          to={`/`}
-          className="logo"
-          style={{
-            backgroundImage: `url("/img/PPplaceholder.jpg")`,
-          }}
-        ></NavLink>
+        <NavLink to={`/`} className="logo">
+          <img src="/img/logo.svg" alt="" />
+        </NavLink>
         <div>
           <button onClick={() => setIsInfoModalOpen(!isInfoModalOpen)}>
             <img src="/icons/Info.svg" alt="" />
           </button>
           <button onClick={() => setIsSettingsModalOpen(true)}>
             <img src="/icons/Settings.svg" alt="" />
+          </button>
+          <button onClick={handleDownloadZip}>
+            <img src="/icons/Download.svg" alt="" />
           </button>
           <button onClick={handleSave}>{postId ? (isCreator ? "Mettre à jour" : "Créer une copie") : "Créer"}</button>
         </div>
@@ -190,8 +305,16 @@ const EditorPage = () => {
         <div className="modal-overlay">
           <div className="modal-content">
             <h2>Information</h2>
-            <p>Voici les instructions...</p>
-            <button className="closeButton" onClick={() => setIsInfoModalOpen(false)}>
+            <h3>1. Agrandir une section</h3>
+            <p className="Information">
+              Vous pouvez cliquer sur <i className="fa-brands fa-html5"></i> HTML, <i className="fa-brands fa-css3-alt"></i> CSS, et{" "}
+              <i className="fa-brands fa-js"></i> JS pour l'agrandir.
+            </p>
+            <h3>2. Changer la taille de l'output</h3>
+            <p className="Information">Vous pouvez redimensionner la taille de l'output avec l'icône en bas à droite de celui-ci.</p>
+            <h3>3. Modifier le head</h3>
+            <p className="Information">Vous pouvez modifier la balise head de votre projet en vous rendant sur le bouton avec l'icône paramètre.</p>
+            <button className="closeButton" onClick={toggleInfoModal}>
               Close
             </button>
           </div>
@@ -203,27 +326,29 @@ const EditorPage = () => {
         <div className="modal-overlay">
           <div className="modal-content">
             <h2>Modifier les paramètres du post</h2>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSaveSettings();
-              }}
-            >
-              <label>
-                Nom :
-                <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
-              </label>
-              <label>
-                Image (URL) :
-                <input type="text" value={image} onChange={(e) => setImage(e.target.value)} required />
-              </label>
-              <label>
-                Head :<textarea value={head} onChange={(e) => setHead(e.target.value)} rows="4"></textarea>
-              </label>
-              <button type="submit">Enregistrer</button>
-              <button type="button" onClick={() => setIsSettingsModalOpen(false)}>
-                Annuler
-              </button>
+            <form onSubmit={(e) => e.preventDefault()}>
+              <div>
+                <div>
+                  <label>Nom :</label>
+                  <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
+                </div>
+                <div>
+                  <label>Image :</label>
+                  <input type="file" accept="image/*" onChange={handleImageChange} />
+                </div>
+              </div>
+              <div className="head">
+                <label>Head :</label>
+                <textarea value={head} onChange={(e) => setHead(e.target.value)} rows="4"></textarea>
+              </div>
+              <div>
+                <button type="button" onClick={handleSaveSettings}>
+                  Enregistrer
+                </button>
+                <button type="button" onClick={() => setIsSettingsModalOpen(false)}>
+                  Annuler
+                </button>
+              </div>
             </form>
           </div>
         </div>
@@ -241,14 +366,14 @@ const EditorPage = () => {
             <label htmlFor="HTML" onClick={() => handleLabelClick("HTML")}>
               <i className="fa-brands fa-html5"></i> HTML
             </label>
-            <textarea
+            <CodeInput
               className="box"
-              name="HTML"
-              id="HTML"
-              value={htmlCode}
-              onChange={(e) => setHtmlCode(e.target.value)}
+              lang="html"
+              code={htmlCode}
+              setCode={setHtmlCode}
+              placeholder="Écrivez votre code HTML ici..."
               onKeyUp={handleHtmlBalise}
-            ></textarea>
+            />
           </div>
 
           <div
@@ -260,7 +385,7 @@ const EditorPage = () => {
             <label htmlFor="CSS" onClick={() => handleLabelClick("CSS")}>
               <i className="fa-brands fa-css3-alt"></i> CSS
             </label>
-            <textarea className="box" name="CSS" id="CSS" value={cssCode} onChange={(e) => setCssCode(e.target.value)} onKeyUp={run}></textarea>
+            <CodeInput className="box" lang="css" code={cssCode} setCode={setCssCode} placeholder="Écrivez votre code CSS ici..." onKeyUp={run} />
           </div>
 
           <div
@@ -272,7 +397,14 @@ const EditorPage = () => {
             <label htmlFor="JS" onClick={() => handleLabelClick("JS")}>
               <i className="fa-brands fa-js"></i> JS
             </label>
-            <textarea className="box" name="JS" id="JS" value={jsCode} onChange={(e) => setJsCode(e.target.value)} onKeyUp={run}></textarea>
+            <CodeInput
+              className="box"
+              lang="javascript"
+              code={jsCode}
+              setCode={setJsCode}
+              placeholder="Écrivez votre code JavaScript ici..."
+              onKeyUp={run}
+            />
           </div>
         </section>
       </div>

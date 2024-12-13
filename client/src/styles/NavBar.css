@@ -2,7 +2,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 1vw;
+  margin: 2vh 2vw;
 }
 
 .logo {
@@ -11,15 +11,14 @@
   display: block;
   overflow: hidden;
   position: relative;
-  background-size: cover;
-  aspect-ratio: 3/1;
-  background-position: center;
-  background-repeat: no-repeat;
+}
+.logo img {
+  width: 100%;
 }
 
 .UserPP {
-  height: 3.5vw;
-  width: 3.5vw;
+  height: var(--text-size-5);
+  width: var(--text-size-5);
   border-radius: 100%;
 }
 
@@ -56,7 +55,7 @@
   padding: 0.5vw;
   margin: 0;
   text-align: center;
-  font-size: 1.2vw;
+  font-size: var(--text-size-1);
   background: var(--PageBgColor);
   transition-duration: 0.3s;
 }
@@ -74,7 +73,7 @@
 }
 
 .logout-btn {
-  font-size: 1.2vw;
+  font-size: var(--text-size-1);
   border-radius: 0.5vw;
   background: none;
   border: none;
@@ -103,7 +102,7 @@
   color: var(--TextColor);
   text-decoration: none;
   padding: 1.25vw 7vw;
-  font-size: 1.2vw;
+  font-size: var(--text-size-2);
   position: relative;
   transition: color 0.3s;
 }

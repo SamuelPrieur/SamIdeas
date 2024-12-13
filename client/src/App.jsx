@@ -6,7 +6,7 @@ import EditorPage from "@pages/EditorPage";
 import Profil from "@pages/Profil";
 import Login from "@pages/Login";
 import Register from "@pages/Register";
-import ProtectedRoute from "@components/ProtectedRoute"; // Import du composant
+import ProtectedRoute from "@components/ProtectedRoute";
 
 const App = () => {
   return (

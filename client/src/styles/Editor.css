@@ -30,7 +30,18 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 1vw 1vw 0 1vw;
+  padding: 2vh 2vw;
+}
+
+.logo {
+  width: 10vw;
+  height: 100%;
+  display: block;
+  overflow: hidden;
+  position: relative;
+}
+.logo img {
+  width: 100%;
 }
 
 .ActionBar div {
@@ -46,10 +57,10 @@
   align-items: center;
   justify-content: center;
   margin: 0;
-  font-size: 1rem;
+  font-size: var(--text-size-1);
 }
 .ActionBar div button img {
-  width: 1rem;
+  width: var(--text-size-1);
 }
 
 .Editor {
@@ -88,19 +99,16 @@
   margin: 0.5rem;
 }
 
-label {
+.input-group label {
   margin: 0 0 5px 10px;
+  font-size: var(--text-size-1);
 }
 
-#HTML,
-#CSS,
-#JS {
-  overflow: scroll;
+.code-input {
   flex-grow: 1;
   width: 100%;
   height: auto;
   resize: none;
-  color: var(--TextColor);
   background-color: var(--SecondaryElementBgColor);
   border: 0;
   outline: 0;
@@ -113,7 +121,7 @@ label {
 .editor {
   white-space: pre-wrap;
   font-family: monospace;
-  font-size: 16px;
+  font-size: var(--text-size-1);
   padding: 10px;
   min-height: 200px;
 }
@@ -122,8 +130,8 @@ label {
   color: red;
 }
 
-/* Fond Noir */
 .modal-overlay {
+  z-index: 100;
   position: fixed;
   top: 0;
   left: 0;
@@ -142,18 +150,82 @@ label {
 }
 
 .modal-content {
-  position: relative;
+  display: flex;
   color: var(--TextColor);
-  background-color: var(--SecondaryElementBgColor);
+  background-color: var(--ElementBgColor);
   padding: 2vw;
+  flex-direction: column;
   border-radius: 10px;
-  max-width: 40vw;
-
+  margin: 0 auto;
   animation: fadeIn 0.3s ease;
 }
-.modal-content button {
+
+.modal-content h2 {
+  font-size: var(--text-size-2);
+  margin-bottom: 1rem;
+}
+
+.modal-content h2 {
+  font-size: var(--text-size-2);
+  margin-bottom: 1rem;
+}
+
+.modal-content form {
+  font-size: var(--text-size-1);
+}
+
+.modal-content form div div label,
+.modal-content form div label {
+  margin-bottom: 1vw;
+}
+
+.modal-content form div div,
+.head {
+  text-align: start;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 0;
+  width: 100%;
+}
+
+.head textarea {
+  font-size: var(--text-size-1);
+}
+
+.modal-content form div div input[type="file"] {
+  width: 100%;
+}
+.modal-content form div input[type="text"],
+.modal-content form div textarea {
+  padding: 1vw;
+  margin-top: 0.5vw;
+  color: var(--TextColor);
+  font-size: var(--text-size-1);
+  background-color: var(--SecondaryElementBgColor);
+  border-radius: 1vw;
+  width: 100%;
+}
+.modal-content form div {
+  text-align: start;
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 1.5vw;
+  column-gap: 1vw;
+  width: 70vw;
+}
+
+.modal-content form div button {
   margin-top: 4vh;
   text-align: center;
+}
+
+.modal-content form label {
+  font-size: var(--text-size-2);
+}
+
+.modal-content form textarea {
+  height: 30vh;
 }
 
 .modal-content h2 {
@@ -177,4 +249,75 @@ label {
 
 .closeButton {
   width: 100%;
+}
+
+/* Editor */
+
+div.code-input {
+  position: relative;
+  padding: 1rem;
+  height: 100%;
+  width: 100%;
+}
+
+.code-input-read-only {
+  display: none;
+  position: absolute;
+  z-index: 1;
+
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  opacity: 0;
+}
+
+.code-input-read-only.active {
+  display: block;
+}
+
+/* Modification of the prism-funky.min.css theme */
+.code-input pre[class*="language-"],
+.code-input code[class*="language-"] {
+  background: transparent;
+  box-shadow: none;
+}
+
+textarea.editing,
+pre.highlighting {
+  /* Both elements need the same text and space styling so they are directly on top of each other */
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+
+  height: calc(100% - 2rem);
+  width: calc(100% - 2rem);
+
+  /* In the same place */
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
+
+  /* Can be scrolled */
+  overflow: auto;
+  white-space: nowrap;
+}
+
+textarea.editing,
+pre.highlighting,
+pre.highlighting * {
+  font-size: 0.8rem;
+  font-family: "Fira Code", monospace;
+  line-height: 1.5rem;
+  tab-size: 2;
+}
+
+textarea.editing {
+  /* Make textarea almost completely transparent */
+  color: transparent;
+  background-color: transparent;
+
+  caret-color: #fff; /* Or choose your favorite color */
+  resize: none; /* No resize on textarea */
 }

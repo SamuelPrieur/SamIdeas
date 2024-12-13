@@ -1,13 +1,38 @@
 import { NavLink } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Navbar = () => {
   const [profilPicture, setProfilPicture] = useState("");
   const userId = JSON.parse(localStorage.getItem("user"))?._id || "";
 
   const [isActive, setIsActive] = useState(false);
-  const profilRef = useRef(null); // Référence pour l'image de profil
+  const profilRef = useRef(null); 
+
+  useEffect(() => {
+    const fetchProfilePicture = async () => {
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (user && user._id) {
+        try {
+          const response = await axios.get(`http://localhost:8080/api/Profil/${user._id}`);
+          if (response.status === 200) {
+            setProfilPicture(
+              response.data.profilePicture && response.data.profilePicture !== "http://localhost:8080"
+                ? `http://localhost:8080${response.data.profilePicture}`
+                : "/img/PPplaceholder.jpg"
+            );
+          } else {
+            console.error("Impossible de récupérer la photo de profil.");
+          }
+        } catch (error) {
+          console.error("Erreur lors de la récupération de la photo de profil :", error);
+        }
+      }
+    };
+
+    fetchProfilePicture();
+  }, []);
 
   const navigate = useNavigate();
 
@@ -19,7 +44,7 @@ const Navbar = () => {
 
     const handleClickOutside = (event) => {
       if (profilRef.current && !profilRef.current.contains(event.target)) {
-        setIsActive(false); // Désactiver le menu déroulant si on clique à l'extérieur
+        setIsActive(false); 
       }
     };
 
@@ -32,7 +57,7 @@ const Navbar = () => {
 
   const handleProfilClick = (event) => {
     event.stopPropagation();
-    setIsActive((prev) => !prev); // Toggle du menu déroulant
+    setIsActive((prev) => !prev); 
   };
 
   const handleLogout = () => {
@@ -43,12 +68,11 @@ const Navbar = () => {
   return (
     <nav className="SocialNavBar">
       <NavLink
-        to={`/`} // Corrige l'utilisation des backticks
+        to={`/`} 
         className="logo"
-        style={{
-          backgroundImage: `url("/img/PPplaceholder.jpg")`,
-        }}
-      ></NavLink>
+      >
+        <img src="/img/logo.svg" alt="" />
+      </NavLink>
       <div className="LinkContainer">
         <NavLink to="/" className={({ isActive }) => (isActive ? "navLink active" : "navLink")}>
           Trending
@@ -60,12 +84,13 @@ const Navbar = () => {
           Your Work
         </NavLink>
       </div>
+
       <div className="ProfilContainer">
         <img
           ref={profilRef}
           className={`UserPP ${isActive ? "active" : "inactive"}`}
           src={profilPicture || "/img/PPplaceholder.jpg"}
-          alt="User Profil Picture"
+          alt="Profil"
           onClick={handleProfilClick}
         />
         {isActive && (

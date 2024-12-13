@@ -9,7 +9,7 @@ const FollowingPage = () => {
   const [posts, setPosts] = useState([]);
   const [filteredPosts, setFilteredPosts] = useState([]);
   const [currentUserId, setCurrentUserId] = useState(null);
-  const navigate = useNavigate(); // Pour rediriger
+  const navigate = useNavigate();
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -64,8 +64,8 @@ const FollowingPage = () => {
         creator: currentUserId,
       });
 
-      const newPostId = response.data._id; // Récupérer l'ID du post créé
-      navigate(`/EditorPage/${newPostId}`); // Rediriger vers EditorPage avec l'ID
+      const newPostId = response.data._id;
+      navigate(`/EditorPage/${newPostId}`);
     } catch (error) {
       console.error("Erreur lors de la création du post :", error);
       alert("Impossible de créer un nouveau post.");

@@ -2,8 +2,8 @@
   margin: 0 auto 10vh auto;
   width: 90vw;
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* Crée 3 colonnes égales */
-  gap: 3vw; /* Espacement entre les éléments de la grille */
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3vw;
 }
 
 .grid-item {
@@ -14,6 +14,7 @@
 
 .grid-item h3 {
   margin: 1vw 0;
+  font-size: var(--text-size-2);
 }
 
 .postUser {
@@ -46,8 +47,14 @@
 
 .userInfo img {
   width: 3vw;
+  height: 3vw;
   border-radius: 100%;
   margin-right: 0.5vw;
+}
+
+.userInfo p {
+  text-decoration: none;
+  font-size: var(--text-size-1);
 }
 
 .postUser button {
@@ -55,15 +62,18 @@
   background-color: var(--SecondaryElementBgColor);
   padding: 0.5vw 1vw;
   border-radius: 3px;
+  font-size: var(--text-size-1);
+  margin: 0;
 }
 
 .AucunPost {
-  grid-column: span 3; /* Pour occuper toute la largeur de la grille */
-  display: flex; /* Activer flexbox */
-  align-items: center; /* Centrer verticalement */
-  justify-content: center; /* Centrer horizontalement */
-  height: 50vh; /* Prendre toute la hauteur disponible */
-  text-align: center; /* Centrer le texte */
-  font-size: 2rem; /* Ajuster la taille de la police pour une meilleure lisibilité */
-  color: var(--LowTextColor); /* Utiliser une couleur adaptée */
+  grid-column: span 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50vh;
+  text-align: center;
+  font-size: 2rem;
+  color: var(--LowTextColor);
+  font-size: var(--text-size-4);
 }

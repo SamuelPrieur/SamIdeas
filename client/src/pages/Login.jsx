@@ -15,13 +15,11 @@ const Login = () => {
         password,
       });
 
-      // Enregistre le token dans localStorage
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
 
       console.log("Connexion réussie :", response.data);
 
-      // Redirige vers la page TrendingPage
       navigate("/");
     } catch (error) {
       console.error("Erreur lors de la connexion :", error.response.data.message);

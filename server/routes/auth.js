@@ -1,8 +1,20 @@
-// routes/auth.js
 const express = require("express");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const multer = require("multer");
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/");
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, file.fieldname + "-" + uniqueSuffix + "." + file.mimetype.split("/")[1]);
+  },
+});
+
+const upload = multer({ storage: storage });
 
 const router = express.Router();
 
@@ -20,10 +32,9 @@ router.get("/Profil/:id", async (req, res) => {
 });
 
 router.post("/getProfiles", async (req, res) => {
-  const { userIds } = req.body; // Attendre un tableau d'IDs dans le body
+  const { userIds } = req.body;
 
   try {
-    // Trouver tous les utilisateurs correspondants aux IDs
     const users = await User.find({ _id: { $in: userIds } }).select("username profilePicture banner bio socialLinks");
     res.json(users);
   } catch (error) {
@@ -32,54 +43,70 @@ router.post("/getProfiles", async (req, res) => {
   }
 });
 
-router.put("/ModifyProfil/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const updatedData = req.body;
+router.put(
+  "/ModifyProfil/:id",
+  upload.fields([
+    { name: "profilPicture", maxCount: 1 },
+    { name: "banner", maxCount: 1 },
+  ]),
+  (req, res) => {
+    const userId = req.params.id;
+    const { username, bio } = req.body;
+    const profilPicture = req.files["profilPicture"] ? `/uploads/${req.files["profilPicture"][0].filename}` : null;
+    const banner = req.files["banner"] ? `/uploads/${req.files["banner"][0].filename}` : null;
 
-    const updatedUser = await User.findByIdAndUpdate(id, updatedData, { new: true });
+    const updatedData = {
+      username,
+      bio,
+    };
 
-    if (!updatedUser) {
-      return res.status(404).json({ message: "Utilisateur non trouvé." });
-    }
+    if (profilPicture) updatedData.profilePicture = profilPicture;
+    if (banner) updatedData.banner = banner;
 
-    res.status(200).json(updatedUser);
-  } catch (error) {
-    res.status(500).json({ message: "Erreur lors de la mise à jour du profil.", error });
+    User.findByIdAndUpdate(userId, updatedData, { new: true })
+      .then((updatedUser) => res.json(updatedUser))
+      .catch((err) => res.status(500).json({ error: err.message }));
   }
-});
+);
 
-// Fonction pour l'inscription
 router.post("/register", async (req, res) => {
   const { email, username, password } = req.body;
 
   try {
-    const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).json({ message: "Utilisateur déjà existant." });
+    if (password.length < 6) {
+      return res.status(400).json({ message: "Le mot de passe doit contenir au moins 6 caractères." });
+    }
+
+    const existingUserByEmail = await User.findOne({ email });
+    if (existingUserByEmail) {
+      return res.status(400).json({ message: "Cet email est déjà utilisé." });
+    }
+
+    const existingUserByUsername = await User.findOne({ username });
+    if (existingUserByUsername) {
+      return res.status(400).json({ message: "Ce nom d'utilisateur est déjà pris." });
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Création de l'utilisateur avec les valeurs par défaut
     const user = new User({
       email,
       username,
       password: hashedPassword,
-      isVerified: false,
-      follows: [],
-      profilePicture: "", // URL de l'image de profil par défaut
-      banner: "", // URL de l'image de bannière par défaut
-      bio: "", // Bio par défaut (chaîne vide)
-      socialLinks: [], // Liens sociaux par défaut (tableau vide)
     });
 
     await user.save();
     res.status(201).json({ message: "Utilisateur créé avec succès." });
   } catch (error) {
+    if (error.name === "ValidationError") {
+      const errorMessages = Object.values(error.errors).map((err) => err.message);
+      return res.status(400).json({ message: errorMessages.join(", ") });
+    }
+
     res.status(500).json({ message: "Erreur lors de la création de l'utilisateur." });
   }
 });
 
-// Fonction pour la connexion
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -104,7 +131,6 @@ router.post("/follow", async (req, res) => {
     const currentUser = await User.findById(currentUserId);
     if (!currentUser) return res.status(404).json({ message: "Utilisateur non trouvé." });
 
-    // Vérifier si l'utilisateur est déjà suivi
     if (currentUser.follows.includes(userIdToFollow)) {
       return res.status(200).json({ message: "Utilisateur déjà suivi." });
     }
@@ -118,7 +144,6 @@ router.post("/follow", async (req, res) => {
   }
 });
 
-// Fonction pour ne plus suivre un utilisateur
 router.post("/unfollow", async (req, res) => {
   const { currentUserId, userIdToUnfollow } = req.body;
 
@@ -142,8 +167,7 @@ router.get("/unfollowed/:id", async (req, res) => {
     const user = await User.findById(userId).select("follows");
     if (!user) return res.status(404).json({ message: "Utilisateur introuvable." });
 
-    // Récupérer tous les utilisateurs sauf ceux qui sont suivis et l'utilisateur actuel
-    const unfollowedUsers = await User.find({ _id: { $nin: [...user.follows, userId] } }).select("username _id");
+    const unfollowedUsers = await User.find({ _id: { $nin: [...user.follows, userId] } }).select("profilePicture username _id bio ");
 
     res.json(unfollowedUsers);
   } catch (error) {

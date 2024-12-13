@@ -1,14 +1,26 @@
 const express = require("express");
 const Post = require("../models/Post");
 const User = require("../models/User");
+const multer = require("multer");
 
 const router = express.Router();
 
-// Affichage de tous les posts
+// Configuration du stockage des images
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/"); // Dossier où seront stockées les images
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, file.fieldname + "-" + uniqueSuffix + "." + file.mimetype.split("/")[1]);
+  },
+});
+
+const upload = multer({ storage: storage });
+
 router.get("/posts", async (req, res) => {
   try {
     const posts = await Post.find().populate("creator", "username profilePicture").sort({ createdAt: -1 });
-
     res.json(posts);
   } catch (error) {
     console.error("Erreur lors de la récupération des posts :", error);
@@ -16,17 +28,11 @@ router.get("/posts", async (req, res) => {
   }
 });
 
-// Récupérer un post par ID
 router.get("/posts/:postId", async (req, res) => {
   const { postId } = req.params;
-
   try {
     const post = await Post.findById(postId);
-
-    if (!post) {
-      return res.status(404).json({ message: "Post non trouvé." });
-    }
-
+    if (!post) return res.status(404).json({ message: "Post non trouvé." });
     res.json(post);
   } catch (error) {
     console.error("Erreur lors de la récupération du post :", error);
@@ -34,42 +40,57 @@ router.get("/posts/:postId", async (req, res) => {
   }
 });
 
-// Création d'un post
-router.post("/createPost", async (req, res) => {
-  const { name, head, image, HTML, CSS, JS, creator } = req.body;
+router.post("/createPost", upload.single("image"), async (req, res) => {
+  const { name, head, HTML, CSS, JS, creator } = req.body;
+  const image = req.file ? `/uploads/${req.file.filename}` : null;
 
   try {
-    const newPost = new Post({ name, head, image, HTML, CSS, JS, creator });
+    const newPost = new Post({
+      name,
+      head,
+      image,
+      HTML,
+      CSS,
+      JS,
+      creator,
+    });
     await newPost.save();
     res.status(201).json(newPost);
   } catch (error) {
+    console.error("Erreur lors de la création du post :", error);
     res.status(500).json({ message: "Erreur lors de la création du post." });
   }
 });
 
-// Mise à jour d'un post
-router.put("/updatePost/:postId", async (req, res) => {
+router.put("/updatePost/:postId", upload.single("image"), async (req, res) => {
   const { postId } = req.params;
-  const { name, head, image, HTML, CSS, JS, creator } = req.body;
+  const { name, head, HTML, CSS, JS, creator } = req.body;
+  const image = req.file ? `/uploads/${req.file.filename}` : null;
+
+  const updatedData = {
+    name,
+    head,
+    HTML,
+    CSS,
+    JS,
+    creator,
+  };
+
+  if (image) updatedData.image = image;
 
   try {
-    const updatedPost = await Post.findByIdAndUpdate(postId, { name, head, image, HTML, CSS, JS, creator }, { new: true, runValidators: true });
-
-    if (!updatedPost) {
-      return res.status(404).json({ message: "Post non trouvé." });
-    }
-
+    const updatedPost = await Post.findByIdAndUpdate(postId, updatedData, { new: true, runValidators: true });
+    if (!updatedPost) return res.status(404).json({ message: "Post non trouvé." });
     res.json(updatedPost);
   } catch (error) {
+    console.error("Erreur lors de la mise à jour du post :", error);
     res.status(500).json({ message: "Erreur lors de la mise à jour du post." });
   }
 });
 
-// Affichage des posts d'un utilisateur
 router.get("/user/:creatorId", async (req, res) => {
   try {
     const posts = await Post.find({ creator: req.params.creatorId });
-
     res.json(posts);
   } catch (error) {
     console.error("Error:", error);
@@ -77,7 +98,6 @@ router.get("/user/:creatorId", async (req, res) => {
   }
 });
 
-// Affichage des posts des utilisateurs suivis
 router.get("/following/:userId", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);

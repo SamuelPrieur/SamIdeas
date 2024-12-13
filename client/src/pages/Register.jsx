@@ -6,20 +6,24 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate(); // Initialisez navigate ici
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
     try {
       const response = await axios.post("http://localhost:8080/api/register", {
         email,
         username,
         password,
       });
-      console.log(response.data.message); // Affiche le message de succès
-      navigate("/Login"); // Redirection après l'inscription réussie
+      console.log(response.data.message);
+      navigate("/Login");
     } catch (error) {
       console.error("Erreur lors de l'inscription :", error.response.data.message);
+      setError(error.response.data.message);
     }
   };
 
@@ -27,6 +31,7 @@ const Register = () => {
     <div className="ConnexionContainer">
       <form className="Connexion box" onSubmit={handleSubmit}>
         <h1>Bienvenue</h1>
+        {error && <p className="error-message">{error}</p>}
         <div className="divConnexionFlex">
           <div className="divConnexion">
             <label htmlFor="Email">Adresse mail :</label>
@@ -45,7 +50,6 @@ const Register = () => {
             />
           </div>
         </div>
-
         <div className="divConnexion">
           <label htmlFor="Password">Mot de passe :</label>
           <input
@@ -58,7 +62,6 @@ const Register = () => {
             required
           />
         </div>
-
         <button type="submit">Créer un compte</button>
         <Link className="LinkConnexion" to="../Login">
           Déjà un compte?

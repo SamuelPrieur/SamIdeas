@@ -8,7 +8,6 @@ const postSchema = new mongoose.Schema({
   CSS: { type: String },
   JS: { type: String },
   creator: { type: String },
-  /* creator: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },  */
 });
 
 const Post = mongoose.model("Post", postSchema);
